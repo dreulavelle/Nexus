@@ -402,4 +402,16 @@ class Sites(BaseModel):
             return None
 
 
-sites = Sites()
+sites = {
+    "torlock": Torlock(),
+    "zooqle": Zooqle(),
+    "magnetdl": MagnetDL(),
+    "nyaa": NyaaSi(),
+    "piratebay": Piratebay(),
+    "bitsearch": Bitsearch(),
+    "kickass": Kickass(),
+    "yts": Yts(),
+    "limetorrent": Limetorrent(),
+    "torrentfunk": Torrentfunk(),
+    "yourbittorrent": Yourbittorrent(),
+}

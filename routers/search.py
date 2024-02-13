@@ -6,7 +6,6 @@ from asyncio import gather, create_task
 
 search = APIRouter(tags=["Search"], prefix="/search")
 
-
 @search.get("/")
 async def search_torrents(
     query: str,
@@ -27,22 +26,12 @@ async def search_torrents(
     query = query.title()
     tasks = []
 
-    if site:
-        # Search a specific site
-        if site in sites.keys():
-            tasks.append(
-                create_task(
-                    sites.search(site=site, query=query, page=page, limit=limit)
-                )
-            )
-        else:
-            raise HTTPException(status_code=404, detail=f"Site '{site}' not found.")
-    else:
-        # Search all sites
-        for site_name, site_instance in sites.items():
-            tasks.append(
-                create_task(site_instance.search(query, page=page, limit=limit))
-            )
+    if site and site not in sites.keys():
+        raise HTTPException(status_code=404, detail=f"Site '{site}' not found.")
+
+    for site_name, site_instance in sites.items():
+        if not site or site_name == site:
+            tasks.append(create_task(site_instance.search(query, page=page, limit=limit)))
 
     search_results = await gather(*tasks)
     combined_results = {"data": [], "total": 0}

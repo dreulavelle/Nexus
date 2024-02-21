@@ -11,8 +11,8 @@ if ! [ "$PGID" -eq "$PGID" ] 2> /dev/null; then
     exit 1
 fi
 
-: ${USERNAME:=nexus}
-: ${GROUPNAME:=nexus}
+: ${USERNAME:=Nexus}
+: ${GROUPNAME:=Nexus}
 
 if ! getent group ${PGID} >/dev/null; then
     addgroup -g $PGID $GROUPNAME > /dev/null

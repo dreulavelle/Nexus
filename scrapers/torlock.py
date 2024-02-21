@@ -124,6 +124,16 @@ class Torlock(BaseScraper):
             print(f"Error fetching torrent details from {url}: {e}")
         return None
 
+    async def parser_result(self, start_time, url, session, idx=0):
+        htmls = await self.get_all_results(session, url)
+        result, urls = self._parser(htmls, idx)
+        if result is not None:
+            results = await self._get_torrent(result, session, urls)
+            results["time"] = time.time() - start_time
+            results["total"] = len(results["data"])
+            return results
+        return result
+
     async def search(self, query, page, limit):
         search_url = f"{self.url}/all/torrents/{query}.html?sort=seeds&page={page}"
         async with aiohttp.ClientSession() as session:
@@ -145,39 +155,3 @@ class Torlock(BaseScraper):
             else:
                 print(f"Failed to search Torlock with status code: {response.status}")
                 return {"data": []}
-
-    async def parser_result(self, start_time, url, session, idx=0):
-        htmls = await self.get_all_results(session, url)
-        result, urls = self._parser(htmls, idx)
-        if result is not None:
-            results = await self._get_torrent(result, session, urls)
-            results["time"] = time.time() - start_time
-            results["total"] = len(results["data"])
-            return results
-        return result
-
-    async def trending(self, category, page, limit):
-        async with aiohttp.ClientSession() as session:
-            start_time = time.time()
-            self.limit = limit
-            if not category:
-                url = self.url
-            else:
-                if category == "books":
-                    category = "ebooks"
-                url = self.url + "/{}.html".format(category)
-            return await self.parser_result(start_time, url, session)
-
-    async def recent(self, category, page, limit):
-        async with aiohttp.ClientSession() as session:
-            start_time = time.time()
-            self.limit = limit
-            if not category:
-                url = self.url + "/fresh.html"
-            else:
-                if category == "books":
-                    category = "ebooks"
-                url = self.url + "/{}/{}/added/desc.html".format(category, page)
-            return await self.parser_result(start_time, url, session)
-
-    #! Maybe impelment Search By Category in Future

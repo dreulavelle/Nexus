@@ -3,14 +3,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routers.home import base
-from routers.recent import recent
 from routers.search import search
-from routers.trending import trending
-from utils.settings import VERSION
+from utils.settings import settings
 
 app = FastAPI(
     title="Nexus",
-    version=VERSION,
+    version=settings.version,
     description="On Demand Cache Real-Debrid Indexer",
     docs_url="/docs",
     contact={"name": "Nexus", "url": "https://github.com/Pukabyte/Nexus"},
@@ -18,8 +16,6 @@ app = FastAPI(
 
 app.include_router(base)
 app.include_router(search)
-app.include_router(trending)
-app.include_router(recent)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

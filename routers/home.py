@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
 
 from routers import error_handler
-from utils.settings import VERSION
+from utils.settings import settings
 from utils.sites import sites
 
 base = APIRouter(tags=["Home Route"], prefix="")
@@ -14,7 +14,7 @@ def root(req: Request):
     return JSONResponse(
         {
             "app": "Nexus",
-            "version": VERSION,
+            "version": settings.version,
             "ip": req.client.host,
         }
     )

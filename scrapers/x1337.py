@@ -82,15 +82,6 @@ class X1337(BaseScraper):
         except:
             return None, None
 
-    async def search(self, query, page, limit):
-        async with aiohttp.ClientSession() as session:
-            self.limit = limit
-            start_time = time.time()
-            url = self.url + "/search/{}/{}/".format(query, page)
-            return await self.parser_result(
-                start_time, url, session, query=query, page=page
-            )
-
     async def parser_result(self, start_time, url, session, page, query=None):
         htmls = await self.get_all_results(session, url)
         result, urls = self._parser(htmls)
@@ -127,22 +118,11 @@ class X1337(BaseScraper):
             return results
         return result
 
-    async def trending(self, category, page, limit):
+    async def search(self, query, page, limit):
         async with aiohttp.ClientSession() as session:
-            start_time = time.time()
             self.limit = limit
-            if not category:
-                url = self.url + "/home/"
-            else:
-                url = self.url + "/popular-{}".format(category.lower())
-            return await self.parser_result(start_time, url, session, page)
-
-    async def recent(self, category, page, limit):
-        async with aiohttp.ClientSession() as session:
             start_time = time.time()
-            self.limit = limit
-            if not category:
-                url = self.url + "/trending"
-            else:
-                url = self.url + "/cat/{}/{}/".format(str(category).capitalize(), page)
-            return await self.parser_result(start_time, url, session, page)
+            url = self.url + "/search/{}/{}/".format(query, page)
+            return await self.parser_result(
+                start_time, url, session, query=query, page=page
+            )

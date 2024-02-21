@@ -4,6 +4,7 @@ PROJECT_NAME := nexus
 
 OS := $(shell uname -s)
 DOCKER_COMPOSE_CMD := $(shell command -v docker-compose || echo "docker compose")
+ENV_FILE := .env
 
 # Detect OS and set grep command accordingly
 ifeq ($(OS),Linux)
@@ -14,6 +15,12 @@ else
     GREP_COMMAND := findstr
 endif
 
+# Check for .env file and load it if exists
+ifneq ("$(wildcard $(ENV_FILE))","")
+    include $(ENV_FILE)
+    export $(shell sed 's/=.*//' $(ENV_FILE))
+endif
+
 # Help target to display help screen
 .PHONY: help
 help:
@@ -21,7 +28,7 @@ help:
 
 .PHONY: install
 install:  ## Install dependencies
-	@pip install -r requirements.txt
+	@pip install -r requirements.txt --break-system-packages
 
 # Prepare Docker network
 .PHONY: prepare-network
@@ -34,7 +41,9 @@ prepare-network:
 # Docker Compose Commands
 .PHONY: build
 build: prepare-network  ## Build or rebuild services
-	@$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_FILE) build
+	@$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_FILE) build \
+		--build-arg RD_APITOKEN=$(RD_APITOKEN) \
+		--build-arg ANOTHER_ARG=$(ANOTHER_ARG)
 
 .PHONY: run
 run: stop  ## Start containers

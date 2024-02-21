@@ -14,3 +14,5 @@ pydantic>=2.6.1
 pytest>=8.0.1
 black>=23.12.1
 isort>=5.13.2
+pydantic_settings
+structlog

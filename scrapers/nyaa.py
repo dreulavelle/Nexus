@@ -80,10 +80,3 @@ class NyaaSi(BaseScraper):
             self.limit = limit
             url = self.url + "/?f=0&c=0_0&q={}".format(query)
             return await self.parser_result(start_time, url, session)
-
-    async def recent(self, category, page, limit):
-        async with aiohttp.ClientSession() as session:
-            start_time = time.time()
-            self.limit = limit
-            url = self.url
-            return await self.parser_result(start_time, url, session)

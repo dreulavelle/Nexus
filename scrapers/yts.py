@@ -85,6 +85,16 @@ class Yts(BaseScraper):
         except:
             return None, None
 
+    async def parser_result(self, start_time, url, session):
+        htmls = await self.get_all_results(session, url)
+        result, urls = self._parser(htmls)
+        if result is not None:
+            results = await self._get_torrent(result, session, urls)
+            results["time"] = time.time() - start_time
+            results["total"] = len(results["data"])
+            return results
+        return result
+
     async def search(self, query, page, limit):
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
@@ -100,34 +110,4 @@ class Yts(BaseScraper):
                 url = self.url + "/browse-movies/{}/all/all/0/latest/0/all".format(
                     query
                 )
-            return await self.parser_result(start_time, url, session)
-
-    async def parser_result(self, start_time, url, session):
-        htmls = await self.get_all_results(session, url)
-        result, urls = self._parser(htmls)
-        if result is not None:
-            results = await self._get_torrent(result, session, urls)
-            results["time"] = time.time() - start_time
-            results["total"] = len(results["data"])
-            return results
-        return result
-
-    async def trending(self, category, page, limit):
-        async with aiohttp.ClientSession() as session:
-            start_time = time.time()
-            self.limit = limit
-            url = self.url + "/trending-movies"
-            return await self.parser_result(start_time, url, session)
-
-    async def recent(self, category, page, limit):
-        async with aiohttp.ClientSession() as session:
-            start_time = time.time()
-            self.limit = limit
-            if page != 1:
-                url = (
-                    self.url
-                    + "/browse-movies/0/all/all/0/featured/0/all?page={}".format(page)
-                )
-            else:
-                url = self.url + "/browse-movies/0/all/all/0/featured/0/all"
             return await self.parser_result(start_time, url, session)

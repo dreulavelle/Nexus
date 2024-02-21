@@ -56,5 +56,8 @@ class Apibay(BaseScraper):
         finally:
             await self.close()
 
-        data["time"] = time.time() - start_time
-        return data
+        timer = time.time() - start_time
+        data["time"] = timer
+        logger.info(f"Time taken: {timer.__round__(2)}")
+        if data:
+            return data

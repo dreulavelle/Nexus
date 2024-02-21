@@ -9,7 +9,7 @@ class RD:
     """Real Debrid class for Real Debrid API operations"""
 
     def __init__(self):
-        self.rd_key = settings.get("RD_APITOKEN")
+        self.rd_key = settings.rd_apitoken.get_secret_value()
         if not self.rd_key:
             logger.error(
                 "Real Debrid API Key not found. Please add it to .env or environment variables."
